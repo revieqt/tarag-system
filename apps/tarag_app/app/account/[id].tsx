@@ -17,7 +17,7 @@ import { useInternetConnection } from '@/utils/checkInternetConnection';
 
 
 export default function ProfileScreen() {
-  const { otherUserId } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const router = useRouter();
   const primaryColor = useThemeColor({}, 'primary');
   const { session } = useSession();
@@ -26,16 +26,18 @@ export default function ProfileScreen() {
   const isConnected = useInternetConnection();
   
   let user = session?.user;
-  const isCurrentUser = !otherUserId;
+  
+  // Check if the identifier matches current user's ID or username
+  const isCurrentUser = !id || id === user?.id || id === user?.username;
   const displayUser = isCurrentUser ? user : otherUser;
 
   useEffect(() => {
-    if (otherUserId) {
-      // TODO: Fetch other user data from API
-      // For now, placeholder
-      console.log('Fetching user with ID:', otherUserId);
+    if (id && !isCurrentUser) {
+      // TODO: Fetch other user data from API by searching both username and ID
+      // The backend should accept an identifier that could be either username or ID
+      console.log('Fetching user with identifier (username or ID):', id);
     }
-  }, [otherUserId]);
+  }, [id, isCurrentUser, user?.id, user?.username]);
 
   // Determine if tabs should be visible
   const showTravelInfo = isCurrentUser || displayUser?.visibilitySettings?.isTravelInfoPublic;

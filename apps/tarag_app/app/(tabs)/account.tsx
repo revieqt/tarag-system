@@ -12,7 +12,7 @@ import { useLocation } from '@/hooks/useLocation';
 import { openDocument } from '@/utils/documentUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 // import { renderProUpgrade } from '@/app/account/settings-pro';
 import { renderMapTypeSettings } from '@/app/account/settings-mapType';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -97,7 +97,8 @@ export default function AccountScreen() {
             style={styles.profileButton}
             onPress={() =>
               router.push({
-                pathname: '/account/profile',
+                pathname: '/account/[id]',
+                params: { id: user?.id },
               })
             }
           >

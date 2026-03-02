@@ -1,4 +1,4 @@
-import {Image} from 'react-native';
+import {Image} from 'expo-image';
 import { BACKEND_URL } from '@/constants/Config';
 
 interface ProfileImageProps {
@@ -13,6 +13,7 @@ export default function ProfileImage({ imagePath }: ProfileImageProps) {
   return (
     <Image
       source={imageSource}
+      cachePolicy='memory-disk'
       style={{ flex: 1, width: '100%', height: '100%' }}
     />
   );

@@ -123,7 +123,7 @@ function AppContent() {
           <Stack.Screen name="auth/verifyEmail" />
           <Stack.Screen name="auth/changePassword" />
           <Stack.Screen name="account/firstLogin" />
-          <Stack.Screen name="account/profile" />
+          <Stack.Screen name="account/[id]" />
           <Stack.Screen name="account/settings-accountControl" />
           <Stack.Screen name="routes/routes" />
           <Stack.Screen name="routes/routes-create" />

@@ -1,4 +1,4 @@
-export const BACKEND_URL = "http://localhost:5000";
+export const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 
 export const DEFAULT_AREA_CODES = [
   { label: '🇵🇭 +63', value: '+63' },   // Philippines

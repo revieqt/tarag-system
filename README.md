@@ -92,7 +92,7 @@ cd ..
 
 ### 3. Environment Configuration
 
-Create `.env` files in the backend directory:
+Create `.env` files in the directory:
 
 ```bash
 # backend/.env
@@ -101,27 +101,26 @@ PORT=5000
 MONGODB_URI=mongodb://localhost:27017/tarag
 ```
 
-## 🛠️ Helper Scripts
-
-This monorepo includes convenient scripts for common tasks:
-
-### `install-dependencies.ps1` (Windows PowerShell)
-Installs npm dependencies for all apps in the monorepo.
-```powershell
-.\install-dependencies.ps1
-```
-
-### `install-dependencies.sh` (macOS/Linux)
-Installs npm dependencies for all apps in the monorepo.
 ```bash
-./install-dependencies.sh
+# apps/tarag_app/.env
+# BACKEND URL
+BACKEND_URL=http://localhost:5000
+
+# SUPPORT FORM URL
+SUPPORT_FORM_URL=https://forms.gle/PPqT7Sy2JNY5NH2c6
+
+# MAX FREE AI MESSAGES PER DAY
+MAX_FREE_AI_MESSAGES_PER_DAY=5
+
+# PRO PRICE
+TRAVELLER_PRO_PRICE=249.99
 ```
 
-Both scripts will:
-- Install packages for each workspace sequentially
-- Display colored progress indicators
-- Report success/failure for each app
-- Provide a summary at the end
+```bash
+# apps/tarag_admin/.env
+# BACKEND URL
+BACKEND_URL=http://localhost:5000
+```
 
 ## 🏃 Running the Application
 
@@ -320,10 +319,6 @@ This is a monorepo with the following structure:
 rm -rf node_modules package-lock.json
 npm install
 ```
-
-## 📄 License
-
-Add your license information here.
 
 ## 📧 Contact
 

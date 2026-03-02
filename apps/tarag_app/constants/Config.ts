@@ -1,8 +1,7 @@
-export const BACKEND_URL = "http://192.168.68.108:5000";
-// export const BACKEND_URL = "https://tarag-v2-backend.onrender.com";
-export const SUPPORT_FORM_URL = "https://forms.gle/PPqT7Sy2JNY5NH2c6";
-export const MAX_FREE_MESSAGES_PER_DAY = 5;
-export const TRAVELLER_PRO_PRICE = 249.99;
+export const BACKEND_URL = process.env.BACKEND_URL;
+export const SUPPORT_FORM_URL = process.env.SUPPORT_FORM_URL;
+export const MAX_FREE_AI_MESSAGES_PER_DAY = process.env.MAX_FREE_AI_MESSAGES_PER_DAY ? parseInt(process.env.MAX_FREE_AI_MESSAGES_PER_DAY) : 5;
+export const TRAVELLER_PRO_PRICE = process.env.TRAVELLER_PRO_PRICE ? parseFloat(process.env.TRAVELLER_PRO_PRICE) : 4.99;
 
 export const DEFAULT_AREA_CODES = [
   { label: '🇵🇭 +63', value: '+63' },   // Philippines

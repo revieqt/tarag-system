@@ -49,7 +49,29 @@ cd TaraG
 
 ### 2. Install Dependencies
 
-Install dependencies for each workspace:
+#### Using Installation Scripts (Recommended)
+
+The easiest way to install all dependencies at once:
+
+**Windows (PowerShell):**
+```powershell
+.\install-dependencies.ps1
+```
+
+**macOS/Linux (Bash):**
+```bash
+./install-dependencies.sh
+```
+
+These scripts will automatically:
+- Install dependencies for Admin Dashboard (`apps/tarag_admin`)
+- Install dependencies for Mobile App (`apps/tarag_app`)
+- Install dependencies for Backend (`backend`)
+- Display progress and a summary report
+
+#### Manual Installation
+
+If you prefer to install dependencies individually:
 
 ```bash
 # Install admin dashboard dependencies
@@ -68,13 +90,6 @@ npm install
 cd ..
 ```
 
-Or use a script to install all at once:
-
-```bash
-# If you prefer, run from root (requires monorepo tooling setup)
-npm install
-```
-
 ### 3. Environment Configuration
 
 Create `.env` files in the backend directory:
@@ -85,6 +100,28 @@ NODE_ENV=development
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/tarag
 ```
+
+## 🛠️ Helper Scripts
+
+This monorepo includes convenient scripts for common tasks:
+
+### `install-dependencies.ps1` (Windows PowerShell)
+Installs npm dependencies for all apps in the monorepo.
+```powershell
+.\install-dependencies.ps1
+```
+
+### `install-dependencies.sh` (macOS/Linux)
+Installs npm dependencies for all apps in the monorepo.
+```bash
+./install-dependencies.sh
+```
+
+Both scripts will:
+- Install packages for each workspace sequentially
+- Display colored progress indicators
+- Report success/failure for each app
+- Provide a summary at the end
 
 ## 🏃 Running the Application
 

@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "TaraG",
+    "slug": "tarag_app",
+    "scheme": "taragapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0065F8"
+    },
+    "ios": {
+      "bundleIdentifier": "com.taragapp",
+      "supportsTablet": true,
+      "googleMobileAdsAppId": "ca-app-pub-8325794315541816~2492770428",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDI_dL8xl7gnjcPps-CXgDJM9DtF3oZPVI"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "TaraG uses your location to show your current position and routes.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "TaraG requires background location to track trips accurately.",
+        "NSLocationAlwaysUsageDescription": "TaraG needs background location to provide travel features."
+      }
+    },
+    "android": {
+      "package": "com.taragapp",
+      "versionCode": 1,
+      "googleMobileAdsAppId": "ca-app-pub-8325794315541816~1418527751",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDI_dL8xl7gnjcPps-CXgDJM9DtF3oZPVI"
+        }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "WAKE_LOCK",
+        "INTERNET",
+        "VIBRATE",
+        "SYSTEM_ALERT_WINDOW",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-8325794315541816~1418527751",
+          "iosAppId": "ca-app-pub-8325794315541816~2492770428"
+        }
+      ],
+      [
+        "react-native-background-geolocation",
+        {
+          "backgroundPermissionRationale": {
+            "title": "Allow TaraG to access your location",
+            "message": "TaraG needs your location in the background to track trips, routes, and safety features.",
+            "positiveAction": "Allow",
+            "negativeAction": "Cancel"
+          }
+        }
+      ]
+    ]
+  }
+}

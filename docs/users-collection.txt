@@ -1,0 +1,30 @@
+{
+ fname (string),
+ mname (string),
+ lname (string),
+ username (string),
+ email (string),
+ password (string),
+ contactNumber (string),
+ bdate (date),
+ gender (string),
+ profileImage (string),
+ type (string),
+ status (string),
+ bio (string),
+ isFirstLogin (boolean),
+ isProUser (boolean),
+ createdOn (date),
+ updatedOn (date),
+ safetyState(object){
+  isInAnEmergency(boolean),
+  emergencyType (string),
+ },
+ publicSettings(object){
+  isProfilePublic (boolean),
+  isPersonalInfoPublic (boolean),
+  isTravelInfoPublic (boolean),
+ }
+}
+
+frontend passes fname, lname, username, email, password, contactNumber, bdate, gender, type

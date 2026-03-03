@@ -12,13 +12,7 @@ import mobileAds from 'react-native-google-mobile-ads';
 import * as SplashScreen from 'expo-splash-screen';
 import AnnouncementModal from '@/components/modals/AnnouncementModal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { configureLocationService } from "@/services/locationService";
-import {
-  getTodaysAnnouncementsToDisplay,
-  getNextAnnouncement,
-  handleNextAnnouncement,
-  Announcement,
-} from '@/services/announcementService';
+import { useAnnouncement } from '@/hooks/useAnnouncement';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -56,10 +50,6 @@ export default function RootLayout() {
       .then(() => console.log('AdMob initialized'));
   }, []);
 
-  // useEffect(() => {
-  //   configureLocationService();
-  // }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -77,35 +67,20 @@ export default function RootLayout() {
 
 function AppContent() {
   const backgroundColor = useThemeColor({}, 'primary');
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [currentAnnouncement, setCurrentAnnouncement] = useState<Announcement | null>(null);
+  const { announcements, currentAnnouncement, handleNextAnnouncement } = useAnnouncement();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    const loadAnnouncements = async () => {
-      const announcementsList = await getTodaysAnnouncementsToDisplay();
-      if (announcementsList.length > 0) {
-        setAnnouncements(announcementsList);
-        const firstAnnouncement = await getNextAnnouncement(announcementsList);
-        
-        if (firstAnnouncement) {
-          setCurrentAnnouncement(firstAnnouncement);
-          setIsModalVisible(true);
-        }
-      }
-    };
-    loadAnnouncements();
-  }, []);
-
-  const handleAnnouncementModalClose = async () => {
-    setIsModalVisible(false);
-    const nextAnnouncement = await handleNextAnnouncement(announcements);
-    if (nextAnnouncement) {
-      setCurrentAnnouncement(nextAnnouncement);
-      setTimeout(() => {
-        setIsModalVisible(true);
-      }, 100);
+    if (currentAnnouncement) {
+      setIsModalVisible(true);
     }
+  }, [currentAnnouncement]);
+
+  const handleAnnouncementModalClose = () => {
+    setIsModalVisible(false);
+    setTimeout(() => {
+      handleNextAnnouncement();
+    }, 100);
   };
 
   return (
@@ -138,11 +113,14 @@ function AppContent() {
         </Stack>
         
       </SafeAreaView>
-      <AnnouncementModal
-        visible={isModalVisible}
-        announcement={currentAnnouncement}
-        onClose={handleAnnouncementModalClose}
-      />
+      
+      {announcements.length > 0 && (
+        <AnnouncementModal
+          visible={isModalVisible}
+          announcement={currentAnnouncement}
+          onClose={handleAnnouncementModalClose}
+        />
+      )}
     </View>
   );
 }

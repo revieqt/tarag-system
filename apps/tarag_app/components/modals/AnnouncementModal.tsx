@@ -14,7 +14,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useColorScheme } from 'react-native';
 import { router } from 'expo-router';
 import * as Linking from 'expo-linking';
-import { Announcement } from '@/services/announcementService';
+import { Announcement } from '@/hooks/useAnnouncement';
 import { BACKEND_URL } from '@/constants/Config';
 import ThemedIcons from '../ThemedIcons';
 

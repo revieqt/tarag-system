@@ -11,6 +11,9 @@ import { useRouter } from 'expo-router';
 import { useInternetConnection } from '@/utils/checkInternetConnection';
 import { CustomAlert } from '@/components/Alert';
 import { useAuthLogin } from '@/context/SessionContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import ThemedIcons from '@/components/ThemedIcons';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -20,6 +23,8 @@ export default function LoginScreen() {
   const [showNoInternetAlert, setShowNoInternetAlert] = useState(false);
   const router = useRouter();
   const isConnected = useInternetConnection();
+  const secondaryColor = useThemeColor({}, 'accent');
+  const primaryColor = useThemeColor({}, 'primary');
   
   // Use the auth hook
   const { login, loading, error } = useAuthLogin();
@@ -90,7 +95,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <ThemedView color='secondary' style={{flex: 1}}>
+    <ThemedView style={{flex: 1}} color='primary'>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{flex: 1}}
@@ -101,58 +106,71 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          <View style={styles.headerContainer}>
+          <ThemedView style={styles.headerContainer} color='secondary'>
             <GradientBlobs />
             <ThemedText type='title' style={{color: '#fff'}}>Smart Plans</ThemedText>
             <ThemedText style={{color: '#fff'}}>
               Safer Journeys, Travel with TaraG!
             </ThemedText>
-          </View>
-          
-          <Wave/>
-          <ThemedView style={styles.formContainer} color='primary'>
-            <TextField
-              placeholder="Email / Username"
-              value={email}
-              onChangeText={setEmail}
-              onFocus={() => setFocusedInput('email')}
-              onBlur={() => setFocusedInput(null)}
-              isFocused={focusedInput === 'email'}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-
-            <PasswordField
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              onFocus={() => setFocusedInput('password')}
-              onBlur={() => setFocusedInput(null)}
-              isFocused={focusedInput === 'password'}
-            />
-
-            <TouchableOpacity
-              onPress={handleforgotPassword}
-            >
-              <ThemedText style={{ textAlign: 'right', opacity: .7}}>
-                Forgot Password?
-              </ThemedText>
-            </TouchableOpacity>
-            <ThemedText style={{ textAlign: 'center', color: 'red'}}>{errorMsg || error || ''}</ThemedText>
-
-            <Button
-              title={loading ? 'Logging in...' : 'Login'}
-              onPress={handleLogin}
-              type="primary"
-              loading={loading}
-              buttonStyle={{ width: '100%', marginTop: 10 }}
-            />
-
-            <TouchableOpacity
-              onPress={handleRegisterRedirect}>
-              <ThemedText style={{textAlign: 'center', marginTop: 10, opacity: .7}}>Dont have an account yet? Register</ThemedText>
-            </TouchableOpacity>
+            <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .35 }} color={secondaryColor} height={230} amplitude={40}/>
           </ThemedView>
+
+          <View style={styles.contentContainer}>
+            <LinearGradient
+              colors={[ 'transparent', primaryColor, primaryColor]}
+              style={styles.formGradient}
+            >
+              <TextField
+                placeholder="Email / Username"
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => setFocusedInput('email')}
+                onBlur={() => setFocusedInput(null)}
+                isFocused={focusedInput === 'email'}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+
+              <PasswordField
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                onFocus={() => setFocusedInput('password')}
+                onBlur={() => setFocusedInput(null)}
+                isFocused={focusedInput === 'password'}
+              />
+
+            </LinearGradient>
+            <ThemedView style={styles.formContainer} color='primary'>
+              
+
+              <TouchableOpacity
+                onPress={handleforgotPassword}
+              >
+                <ThemedText style={{ textAlign: 'right', opacity: .7}}>
+                  Forgot Password?
+                </ThemedText>
+              </TouchableOpacity>
+              <ThemedText style={{ textAlign: 'center', color: 'red'}}>{errorMsg || error || ''}</ThemedText>
+
+              <Button
+                title={loading ? 'Logging in...' : 'Login'}
+                onPress={handleLogin}
+                type="primary"
+                loading={loading}
+                buttonStyle={{ width: '100%', marginTop: 10 }}
+              />
+              <TouchableOpacity style={styles.googleButton}>
+                <ThemedIcons name="google" size={20}/>
+                <ThemedText style={{ marginLeft: 8, fontFamily: 'PoppinsBold'}}>Sign in with Google</ThemedText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleRegisterRedirect}>
+                <ThemedText style={{textAlign: 'center', marginTop: 10, opacity: .7}}>Dont have an account yet? Register</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -174,12 +192,32 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexGrow: 1,
+    height: '55%',
     justifyContent: 'center',
+    paddingBottom: '35%',
     alignItems: 'center',
+  },
+  contentContainer:{
+    zIndex: 100,
+    marginTop: '-52%',
+  },
+  formGradient:{
+    paddingHorizontal: 16,
+    paddingTop: '15%',
   },
   formContainer:{
     padding: 16,
     marginTop: -5,
+  },
+  googleButton: {
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 20
   }
 });

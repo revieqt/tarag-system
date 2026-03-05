@@ -9,6 +9,8 @@ import PasswordField from '@/components/PasswordField';
 import { useSession } from '@/context/SessionContext';
 import { updatePassword } from '@/services/authService';
 import ProcessModal from '@/components/modals/ProcessModal';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import Wave from '@/components/Wave';
 
 export default function ChangePasswordScreen() {
   const { session } = useSession();
@@ -18,6 +20,7 @@ export default function ChangePasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const accentColor = useThemeColor({}, 'accent');
 
   const handleUpdatePassword = async () => {
     if (!session?.user?.id || !session.accessToken) {
@@ -56,8 +59,7 @@ export default function ChangePasswordScreen() {
   }
 
   return (
-    <ThemedView style={{flex: 1}}>
-      <GradientBlobs/>
+    <ThemedView style={{flex: 1}} color='primary'>
       <KeyboardAvoidingView
         style={{padding: 16}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -101,6 +103,7 @@ export default function ChangePasswordScreen() {
         success={showAlert}
         successMessage="Password updated successfully!"
       />
+      <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>
     </ThemedView>
   );
 }
@@ -108,7 +111,7 @@ export default function ChangePasswordScreen() {
 const styles = StyleSheet.create({
   updateButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 80,
     left: 16,
     right: 16,
   },

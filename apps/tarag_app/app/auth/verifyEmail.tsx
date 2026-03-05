@@ -9,8 +9,10 @@ import GradientBlobs from '@/components/GradientBlobs';
 import BackButton from '@/components/BackButton';
 import { sendEmailVerificationCode, verifyEmail } from '@/services/authService';
 import { useSession } from '@/context/SessionContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import Wave from '@/components/Wave';
 
-const RESEND_COOLDOWN = 180; // seconds
+const RESEND_COOLDOWN = 180;
 
 export default function VerifyEmailScreen() {
   const { email, is2FA, accessToken, refreshToken, userData } = useLocalSearchParams<{ 
@@ -26,6 +28,7 @@ export default function VerifyEmailScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const [cooldown, setCooldown] = useState(0);
   const router = useRouter();
+  const accentColor = useThemeColor({}, 'accent');
   const { updateSession } = useSession();
   const is2FAMode = is2FA === 'true';
 
@@ -125,8 +128,7 @@ export default function VerifyEmailScreen() {
   };
 
   return (
-    <ThemedView style={{flex: 1}}>
-      <GradientBlobs/>
+    <ThemedView style={{flex: 1}} color='primary'>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -174,6 +176,8 @@ export default function VerifyEmailScreen() {
         buttonStyle={styles.sendButton}
         disabled={sending || !code || code.length !== 6}
       />
+
+      <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>
     </ThemedView>
   );
 }
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 80,
     left: 16,
     right: 16,
   },

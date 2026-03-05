@@ -11,6 +11,8 @@ import GradientBlobs from '@/components/GradientBlobs';
 import BackButton from '@/components/BackButton';
 import { CustomAlert } from '@/components/Alert';
 import ProcessModal from '@/components/modals/ProcessModal';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import Wave from '@/components/Wave';
 
 const RESEND_COOLDOWN = 180; // seconds
 
@@ -28,6 +30,7 @@ export default function ForgotPasswordScreen() {
   const [userId, setUserId] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [ success, setSuccess] = useState(false);
+  const accentColor = useThemeColor({}, 'accent');
   const router = useRouter();
 
   useEffect(() => {
@@ -189,8 +192,7 @@ export default function ForgotPasswordScreen() {
   const buttonConfig = getButtonConfig();
 
   return (
-    <ThemedView style={{flex: 1}}>
-      <GradientBlobs/>
+    <ThemedView style={{flex: 1}} color='primary'>
       <KeyboardAvoidingView
         style={{padding: 16}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -232,6 +234,7 @@ export default function ForgotPasswordScreen() {
         success={success}
         successMessage="Password reset successfully!"
       />
+      <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>
     </ThemedView>
   );
 }
@@ -239,7 +242,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   sendButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 80,
     left: 16,
     right: 16,
   },

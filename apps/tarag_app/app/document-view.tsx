@@ -1,8 +1,8 @@
 import { BackButton } from '@/components/BackButton';
-import GradientBlobs from '@/components/GradientBlobs';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useLocalSearchParams } from 'expo-router';
+import GradientBlobs from '@/components/GradientBlobs';
 import { StyleSheet, ScrollView, View } from 'react-native';
 
 export default function InfoView() {
@@ -18,11 +18,11 @@ export default function InfoView() {
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
-      <GradientBlobs />
+    <ThemedView style={{ flex: 1 }} color='primary'>
+      <GradientBlobs/>
       <ScrollView style={{ flex: 1, padding: 16, zIndex: 1000 }}>
         <BackButton />
-
+        
         <View style={styles.titleContainer}>
           <ThemedText type='title'>{document.title}</ThemedText>
           <ThemedText>Last updated on: {document.updatedOn}</ThemedText>

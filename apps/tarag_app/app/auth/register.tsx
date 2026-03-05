@@ -22,11 +22,12 @@ import {
 
 } from 'react-native';
 import { openDocument } from '@/utils/documentUtils';
-import GradientBlobs from '@/components/GradientBlobs';
 import ThemedIcons from '@/components/ThemedIcons';
 import RoundedButton from '@/components/RoundedButton';
 import { GENDER_OPTIONS } from '@/constants/Config';
 import { useAuthRegister } from '@/context/SessionContext';
+import Wave from '@/components/Wave';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function RegisterScreen() {
   const [fname, setFname] = useState('');
@@ -42,6 +43,7 @@ export default function RegisterScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const [areaCode, setAreaCode] = useState('+63');
   const [success, setSuccess] = useState(false);
+  const accentColor = useThemeColor({}, 'accent');
 
   // Use the auth hook
   const { register, loading, error } = useAuthRegister();
@@ -158,8 +160,7 @@ export default function RegisterScreen() {
       <TouchableOpacity onPress={handleBackButtonPress} style={{ position: 'absolute', top: 16, left: 16, zIndex: 3 }}>
         <ThemedIcons name="arrow-left" size={24}/>
       </TouchableOpacity>
-      <ThemedView>
-        <GradientBlobs/>
+      <ThemedView color='primary'>
         <Animated.View 
           style={{
             width: screenWidth * 2,
@@ -233,6 +234,7 @@ export default function RegisterScreen() {
               style={styles.proceedButton}
               disabled={!isFirstPageComplete()}
             />
+            <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>
           </View>
 
 
@@ -292,15 +294,18 @@ export default function RegisterScreen() {
                 disabled={!fname || !bdate || !gender || !username || !email || !password || !confirmPassword}
               />
             </View>
-            
+            <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>
           </View>
+          
         </Animated.View>
+        
       </ThemedView>
       <ProcessModal
         visible={ success }
         success={success}
         successMessage="Account Created Successfully!!"
       />
+      
     </KeyboardAvoidingView>
   );
 }
@@ -308,7 +313,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   createAccountButton:{
     position: 'absolute',
-    bottom: 16,
+    bottom: 80,
     right: 16,
     left: 16,
     gap: 16,
@@ -316,8 +321,9 @@ const styles = StyleSheet.create({
   },
   proceedButton:{
     position: 'absolute',
-    bottom: 16,
+    bottom: 50,
     right: 16,
+    zIndex: 100
   },
   headerContainer: {
     marginTop: 40,

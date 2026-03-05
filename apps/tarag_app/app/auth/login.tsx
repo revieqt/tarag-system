@@ -161,8 +161,8 @@ export default function LoginScreen() {
                 buttonStyle={{ width: '100%', marginTop: 10 }}
               />
               <TouchableOpacity style={styles.googleButton}>
-                <ThemedIcons name="google" size={20}/>
-                <ThemedText style={{ marginLeft: 8, fontFamily: 'PoppinsBold'}}>Sign in with Google</ThemedText>
+                <ThemedIcons name="google-plus" size={20}/>
+                <ThemedText style={{ marginLeft: 8}}>Sign in with Google</ThemedText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   googleButton: {
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc7',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

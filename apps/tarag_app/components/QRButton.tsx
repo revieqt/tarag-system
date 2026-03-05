@@ -15,7 +15,7 @@ const QRButton: React.FC = () => {
   return (
     <TouchableOpacity
     style={[styles.wrapper, { backgroundColor: primaryColor }]}
-    onPress={() => router.push('/safety/safety')}
+    onPress={() => router.push('/camera/qr-scan')}
     >
       <ThemedIcons name="qrcode-scan" size={25} color="#ccc" />
     

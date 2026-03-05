@@ -11,10 +11,7 @@ import { authMiddleware } from '../../middleware/authMiddleware';
 
 const router = express.Router();
 
-// Create a new alert
 router.post('/create', authMiddleware, createAlert);
-
-// Get alerts for user based on userType and locations
 router.post('/get-user-alerts', authMiddleware, getAlerts);
 
 // Get the number of alerts that are active today

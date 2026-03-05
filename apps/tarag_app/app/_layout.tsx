@@ -108,7 +108,7 @@ function AppContent() {
           <Stack.Screen name="safety/safety" />
           <Stack.Screen name="rooms/rooms" />
           <Stack.Screen name="rooms/rooms-create" />
-          <Stack.Screen name="qr/qr-scan" />
+          <Stack.Screen name="camera/qr-scan" />
           <Stack.Screen name="+not-found" />
         </Stack>
         

@@ -21,7 +21,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "TaraG uses your location to show your current position and routes.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "TaraG requires background location to track trips accurately.",
-        "NSLocationAlwaysUsageDescription": "TaraG needs background location to provide travel features."
+        "NSLocationAlwaysUsageDescription": "TaraG needs background location to provide travel features.",
+        "NSCameraUsageDescription": "Allow TaraG to access your camera."
       }
     },
     "android": {
@@ -44,7 +45,8 @@
         "SYSTEM_ALERT_WINDOW",
         "RECORD_AUDIO",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
       ]
     },
     "plugins": [
@@ -64,6 +66,12 @@
             "positiveAction": "Allow",
             "negativeAction": "Cancel"
           }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow TaraG to access your camera."
         }
       ]
     ]

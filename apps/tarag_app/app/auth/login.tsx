@@ -37,7 +37,7 @@ export default function LoginScreen() {
       setShowNoInternetAlert(true);
       return;
     }
-
+ 
     if (!email || !password) {
       setErrorMsg('Email and password are required');
       return;

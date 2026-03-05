@@ -420,140 +420,149 @@ export default function ItineraryViewScreen() {
           mapType={getMapTypeEnum(currentMapType)}
           showsUserLocation={true}
         >
-          {allMapLocations.map((loc, idx) => {
-            return (
-              <TaraMarker
-                key={`${loc.latitude},${loc.longitude},${idx}`}
-                coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
-                onPress={() => handleMarkerPress(loc)}
-                type="dot"
-                color="limegreen"
-              />
-            );
-          })}
+          {(!itinerary?.isPrivate || (itinerary?.userID === session?.user?.id)) && (
+            allMapLocations.map((loc, idx) => {
+              return (
+                <TaraMarker
+                  key={`${loc.latitude},${loc.longitude},${idx}`}
+                  coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
+                  onPress={() => handleMarkerPress(loc)}
+                  type="dot"
+                  color="limegreen"
+                />
+              );
+            })
+          )}
+          
         </MapView>
       </View>
-      <LinearGradient
-        colors={['#000', 'transparent']}
-        style={styles.headerGradient}
-      >
-        {(itinerary?.userID && itinerary?.userID === session?.user?.id) && (
-          showFirstOptions ? (
-            <OptionsPopup
-              options={[
-                <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
-                  <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
-                  <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={() => setShowShare(true)}>
-                  <ThemedIcons name="share" size={20} />
-                  <ThemedText>Share Itinerary</ThemedText>
-                </TouchableOpacity>,
-                <OptionsPopup
-                  key="createGroupTrip"
-                  style={[styles.createGroupTrip, { opacity: 0.5 }]}
-                  disabled
-                  options={[
-                    <View key="header">
-                      <ThemedText type='subtitle'>Create Group Trip</ThemedText>
-                      <ThemedText>Create a group with this itinerary and invite your friends</ThemedText>
-                    </View>,
-                    <View style={{flex: 1}} key="form">
-                      <TextField
-                        placeholder="Enter Group Name"
-                        value={groupName}
-                        onChangeText={setGroupName}
-                        onFocus={() => {}}
-                        onBlur={() => {}}
-                        isFocused={false}
-                        autoCapitalize="words"
-                      />
-                      <Button
-                        title={creatingGroup ? 'Creating...' : 'Create Group'}
-                        type='primary'
-                        onPress={handleCreateGroupWithItinerary}
-                        disabled={creatingGroup}
-                      />
-                    </View>
-                  ]}
-                >
-                  <ThemedIcons name="account-group" size={20}/>
-                  <ThemedText>Create a Group with Itinerary</ThemedText>
-                </OptionsPopup>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleGoToUpdateForm}>
-                  <ThemedIcons name="pencil" size={20} />
-                  <ThemedText>Edit Itinerary</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleMarkAsCompleted}>
-                  <ThemedIcons name="check-circle" size={20} />
-                  <ThemedText>Mark as Done</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleCancel}>
-                  <ThemedIcons name="minus-circle" size={20} />
-                  <ThemedText>Cancel Itinerary</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
-                  <ThemedIcons name="delete" size={20} />
-                  <ThemedText>Delete Itinerary</ThemedText>
-                </TouchableOpacity>,
-              ]}
-              style={styles.options}
-            >
-              <ThemedIcons name="dots-vertical" size={20} color="#fff" />
-            </OptionsPopup>
-          ) : (
-            <OptionsPopup
-              options={[
-                <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
-                  <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
-                  <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleRepeatItinerary}>
-                  <ThemedIcons name="history" size={20} />
-                  <ThemedText>Repeat Itinerary</ThemedText>
-                </TouchableOpacity>,
-                <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
-                  <ThemedIcons name="delete" size={20} />
-                  <ThemedText>Delete Itinerary</ThemedText>
-                </TouchableOpacity>
-              ]}
-              style={styles.options}
-            >
-              <ThemedIcons name="dots-vertical" size={20} color="#fff" />
-            </OptionsPopup>
-          ))
-        }
-        
-        <BackButton type="close-floating" color="#fff"/>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
-          <ThemedText type='subtitle' style={{ color: '#fff'}}>
-            {itinerary?.title}
-          </ThemedText>
-          {itinerary?.isPrivate && (
-            <ThemedIcons name="lock" size={15} color='white'/>
-          )}
-        </View>
-        
-        <View style={styles.detailsContainer}>
-          <ThemedIcons name="calendar" size={13} color="#fff"/>
-          <ThemedText style={{ color: '#fff', fontSize: 11 }}>
-            {formatDateToString(itinerary?.startDate || "")} - {formatDateToString(itinerary?.endDate || "")}
-          </ThemedText>
-        </View>
-        <View style={styles.detailsContainer}>
-          <ThemedIcons name="tag" size={13} color="#fff"/>
-          <ThemedText style={{ color: '#fff', fontSize: 11 }}>
-            {itinerary?.type}
-          </ThemedText>
-        </View>
-        <View style={styles.detailsContainer}>
-          <ThemedIcons name="pencil" size={13} color="#fff"/>
-          <ThemedText style={{ color: '#fff', fontSize: 11 }}>
-            Created by {itinerary?.username}
-          </ThemedText>
-        </View>
-      </LinearGradient>
 
+      {(!itinerary?.isPrivate || (itinerary?.userID === session?.user?.id)) && (<>
+        <LinearGradient
+          colors={['#000', 'transparent']}
+          style={styles.headerGradient}
+        >
+          {(itinerary?.userID && itinerary?.userID === session?.user?.id) && (
+            showFirstOptions ? (
+              <OptionsPopup
+                options={[
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
+                    <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
+                    <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={() => setShowShare(true)}>
+                    <ThemedIcons name="share" size={20} />
+                    <ThemedText>Share Itinerary</ThemedText>
+                  </TouchableOpacity>,
+                  <OptionsPopup
+                    key="createGroupTrip"
+                    style={[styles.createGroupTrip, { opacity: 0.5 }]}
+                    disabled
+                    options={[
+                      <View key="header">
+                        <ThemedText type='subtitle'>Create Group Trip</ThemedText>
+                        <ThemedText>Create a group with this itinerary and invite your friends</ThemedText>
+                      </View>,
+                      <View style={{flex: 1}} key="form">
+                        <TextField
+                          placeholder="Enter Group Name"
+                          value={groupName}
+                          onChangeText={setGroupName}
+                          onFocus={() => {}}
+                          onBlur={() => {}}
+                          isFocused={false}
+                          autoCapitalize="words"
+                        />
+                        <Button
+                          title={creatingGroup ? 'Creating...' : 'Create Group'}
+                          type='primary'
+                          onPress={handleCreateGroupWithItinerary}
+                          disabled={creatingGroup}
+                        />
+                      </View>
+                    ]}
+                  >
+                    <ThemedIcons name="account-group" size={20}/>
+                    <ThemedText>Create a Group with Itinerary</ThemedText>
+                  </OptionsPopup>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleGoToUpdateForm}>
+                    <ThemedIcons name="pencil" size={20} />
+                    <ThemedText>Edit Itinerary</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleMarkAsCompleted}>
+                    <ThemedIcons name="check-circle" size={20} />
+                    <ThemedText>Mark as Done</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleCancel}>
+                    <ThemedIcons name="minus-circle" size={20} />
+                    <ThemedText>Cancel Itinerary</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
+                    <ThemedIcons name="delete" size={20} />
+                    <ThemedText>Delete Itinerary</ThemedText>
+                  </TouchableOpacity>,
+                ]}
+                style={styles.options}
+              >
+                <ThemedIcons name="dots-vertical" size={20} color="#fff" />
+              </OptionsPopup>
+            ) : (
+              <OptionsPopup
+                options={[
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
+                    <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
+                    <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleRepeatItinerary}>
+                    <ThemedIcons name="history" size={20} />
+                    <ThemedText>Repeat Itinerary</ThemedText>
+                  </TouchableOpacity>,
+                  <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
+                    <ThemedIcons name="delete" size={20} />
+                    <ThemedText>Delete Itinerary</ThemedText>
+                  </TouchableOpacity>
+                ]}
+                style={styles.options}
+              >
+                <ThemedIcons name="dots-vertical" size={20} color="#fff" />
+              </OptionsPopup>
+            ))
+          }
+          
+          <BackButton type="close-floating" color="#fff"/>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+            <ThemedText type='subtitle' style={{ color: '#fff'}}>
+              {itinerary?.title}
+            </ThemedText>
+            {itinerary?.isPrivate && (
+              <ThemedIcons name="lock" size={15} color='white'/>
+            )}
+          </View>
+          
+          <View style={styles.detailsContainer}>
+            <ThemedIcons name="calendar" size={13} color="#fff"/>
+            <ThemedText style={{ color: '#fff', fontSize: 11 }}>
+              {formatDateToString(itinerary?.startDate || "")} - {formatDateToString(itinerary?.endDate || "")}
+            </ThemedText>
+          </View>
+          <View style={styles.detailsContainer}>
+            <ThemedIcons name="tag" size={13} color="#fff"/>
+            <ThemedText style={{ color: '#fff', fontSize: 11 }}>
+              {itinerary?.type}
+            </ThemedText>
+          </View>
+          <View style={styles.detailsContainer}>
+            <ThemedIcons name="pencil" size={13} color="#fff"/>
+            <ThemedText style={{ color: '#fff', fontSize: 11 }}>
+              Created by {itinerary?.username}
+            </ThemedText>
+          </View>
+        </LinearGradient>
+      </>)}
+      
+
+      {(!itinerary?.isPrivate || (itinerary?.userID === session?.user?.id)) && (
+        <>
       {selectedLocation ? (
         <LinearGradient
           colors={['transparent','#000']}
@@ -645,6 +654,8 @@ export default function ItineraryViewScreen() {
             </ThemedView>
         )
         )}
+        </>
+      )}
       <ShareModal
         visible={showShare}
         link={itinerary ? `exp://tarag-v2.exp.app/itineraries/${itinerary._id}` : ''}
@@ -654,9 +665,12 @@ export default function ItineraryViewScreen() {
       {/* Show privacy overlay if itinerary is private and user is not the owner */}
       {itinerary && itinerary.isPrivate && itinerary.userID !== session?.user?.id && (
         <View style={styles.privateOverlay}>
+          <BackButton type="floating" color="#fff"/>
           <ThemedIcons name="lock" size={48} color="#fff" />
-          <ThemedText style={styles.privateText}>This Itinerary is Private</ThemedText>
-          <ThemedText style={styles.privateSubText}>
+          <ThemedText type='subtitle' style={{color: '#fff', marginTop: 20}}>
+            This Itinerary is Private
+          </ThemedText>
+          <ThemedText style={{color: '#fff'}}>
             Only the creator can view this itinerary
           </ThemedText>
         </View>
@@ -786,14 +800,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 200,
     gap: 12,
-  },
-  privateText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  privateSubText: {
-    color: '#ccc',
-    fontSize: 14,
   },
 });

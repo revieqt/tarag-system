@@ -4,6 +4,7 @@ import cors from 'cors';
 import path from "path";
 import { createServer } from 'http';
 import mongoose from "mongoose";
+import { ipMiddleware } from './middleware/ipMiddleware';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use(ipMiddleware);
 app.use(express.static(path.join(__dirname, "../public")));
 app.use('/api/public', express.static(path.join(__dirname, "../public")));
 app.use('/uploads', express.static(path.join(__dirname, "../uploads")));

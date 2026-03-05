@@ -6,14 +6,14 @@ import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import GradientBlobs from '@/components/GradientBlobs';
 import BackButton from '@/components/BackButton';
 import PasswordField from '@/components/PasswordField';
-import { useSession } from '@/context/SessionContext';
-import { updatePassword } from '@/services/authService';
+import { useSession, usePasswordUpdate } from '@/context/SessionContext';
 import ProcessModal from '@/components/modals/ProcessModal';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Wave from '@/components/Wave';
 
 export default function ChangePasswordScreen() {
   const { session } = useSession();
+  const { update, loading, error } = usePasswordUpdate();
   const [errorMsg, setErrorMsg] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -39,16 +39,10 @@ export default function ChangePasswordScreen() {
     }
 
     try {
-      setIsLoading(true);
       setErrorMsg('');
+      setIsLoading(true);
       
-      await updatePassword({
-        userId: session.user.id,
-        oldPassword,
-        newPassword,
-        confirmPassword,
-        accessToken: session.accessToken
-      });
+      await update(oldPassword, newPassword, confirmPassword);
 
       setShowAlert(true);
     } catch (error: any) {

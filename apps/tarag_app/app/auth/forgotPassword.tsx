@@ -3,7 +3,6 @@ import TextField from '@/components/TextField';
 import PasswordField from '@/components/PasswordField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { resetPassword, sendEmailVerificationCode } from '@/services/authService';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -13,6 +12,7 @@ import { CustomAlert } from '@/components/Alert';
 import ProcessModal from '@/components/modals/ProcessModal';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Wave from '@/components/Wave';
+import { useEmailVerification, usePasswordReset } from '@/context/SessionContext';
 
 const RESEND_COOLDOWN = 180; // seconds
 
@@ -22,16 +22,17 @@ export default function ForgotPasswordScreen() {
   const [sentCode, setSentCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [sending, setSending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
   const [codeVerified, setCodeVerified] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [userId, setUserId] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-  const [ success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false);
   const accentColor = useThemeColor({}, 'accent');
   const router = useRouter();
+  
+  const { sendCode, loading: sendingCode } = useEmailVerification();
+  const { reset, loading: resettingPassword } = usePasswordReset();
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -50,17 +51,13 @@ export default function ForgotPasswordScreen() {
     if (cooldown > 0) return;
 
     try {
-      setSending(true);
-      const { code, id } = await sendEmailVerificationCode(email);
+      const { code } = await sendCode(email);
       setSentCode(code);
-      setUserId(id);
       setEmailSent(true);
       setCooldown(RESEND_COOLDOWN);
       setShowAlert(true);
     } catch (error: any) {
       setErrorMsg(error.message || 'Failed to send verification code.');
-    } finally {
-      setSending(false);
     }
   };
 
@@ -74,14 +71,6 @@ export default function ForgotPasswordScreen() {
   };
 
   const handleResetPassword = async () => {
-    console.log('Starting password reset. Current state:', {
-      userId,
-      email,
-      hasPassword: !!newPassword,
-      hasConfirm: !!confirmPassword,
-      isVerified: codeVerified
-    });
-
     if (newPassword !== confirmPassword) {
       setErrorMsg('Passwords do not match.');
       return;
@@ -93,13 +82,11 @@ export default function ForgotPasswordScreen() {
     }
 
     try {
-      await resetPassword(email, newPassword);
+      await reset(email, newPassword);
       setSuccess(true);
     } catch (error: any) {
-      console.error('Password reset error:', error);
       setErrorMsg(error.message || 'Failed to reset password.');
     }
-    return;
   };
 
   const renderContent = () => {
@@ -115,9 +102,9 @@ export default function ForgotPasswordScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
-            style={{opacity: (sending || cooldown > 0) ? 0.5 : 1 }}
+            style={{opacity: (sendingCode || cooldown > 0) ? 0.5 : 1 }}
             onFocus={() => {
-              if (sending || cooldown > 0) return false;
+              if (sendingCode || cooldown > 0) return false;
             }}
           />
         </>
@@ -164,13 +151,13 @@ export default function ForgotPasswordScreen() {
   const getButtonConfig = () => {
     if (!emailSent) {
       return {
-        title: sending
+        title: sendingCode
           ? 'Sending...'
           : cooldown > 0
             ? `Resend Code (${cooldown}s)`
             : 'Send Code',
         onPress: handleSendCode,
-        disabled: sending || cooldown > 0
+        disabled: sendingCode || cooldown > 0
       };
     }
 
@@ -183,9 +170,9 @@ export default function ForgotPasswordScreen() {
     }
 
     return {
-      title: 'Reset Password',
+      title: resettingPassword ? 'Resetting...' : 'Reset Password',
       onPress: handleResetPassword,
-      disabled: !newPassword || !confirmPassword
+      disabled: !newPassword || !confirmPassword || resettingPassword
     };
   };
 

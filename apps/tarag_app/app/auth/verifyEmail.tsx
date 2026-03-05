@@ -7,8 +7,7 @@ import React, { useEffect, useState } from 'react';
 import {KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import GradientBlobs from '@/components/GradientBlobs';
 import BackButton from '@/components/BackButton';
-import { sendEmailVerificationCode, verifyEmail } from '@/services/authService';
-import { useSession } from '@/context/SessionContext';
+import { useSession, useEmailVerification, useEmailCodeVerification } from '@/context/SessionContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Wave from '@/components/Wave';
 
@@ -23,8 +22,6 @@ export default function VerifyEmailScreen() {
     userData: string;
   }>();
   const [code, setCode] = useState('');
-  const [verificationCode, setVerificationCode] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [cooldown, setCooldown] = useState(0);
   const router = useRouter();
@@ -32,17 +29,16 @@ export default function VerifyEmailScreen() {
   const { updateSession } = useSession();
   const is2FAMode = is2FA === 'true';
 
+  const { sendCode, loading: sendingCode, error: sendError } = useEmailVerification();
+  const { verify, loading: verifyingCode, error: verifyError } = useEmailCodeVerification();
+
   const sendVerificationCode = async () => {
     try {
-      setSending(true);
       setErrorMsg('');
-      const { code: receivedCode } = await sendEmailVerificationCode(email);
-      setVerificationCode(receivedCode);
+      await sendCode(email);
       setCooldown(RESEND_COOLDOWN);
     } catch (error: any) {
-      setErrorMsg(error.message);
-    } finally {
-      setSending(false);
+      setErrorMsg(sendError || error.message);
     }
   };
 
@@ -60,20 +56,16 @@ export default function VerifyEmailScreen() {
   }, [cooldown]);
 
   const handleVerification = async () => {
-    if (!code || !verificationCode) return;
+    if (!code) return;
     
     try {
-      setSending(true);
       setErrorMsg('');
       
-      if (code !== verificationCode) {
-        throw new Error('Invalid verification code');
-      }
+      // Use the verify hook to verify the email code
+      await verify(email, code, '');
       
       if (is2FAMode) {
-        // Handle 2FA verification - reuse verifyEmail function
-        await verifyEmail(email, code, verificationCode);
-        
+        // Handle 2FA verification
         // Parse and save user data from login result
         if (userData && accessToken && refreshToken) {
           const parsedUser = JSON.parse(userData);
@@ -117,13 +109,10 @@ export default function VerifyEmailScreen() {
         }
       } else {
         // Handle account email verification
-        await verifyEmail(email, code, verificationCode);
         router.replace('/account/firstLogin' as any);
       }
     } catch (error: any) {
-      setErrorMsg(error.message);
-    } finally {
-      setSending(false);
+      setErrorMsg(verifyError || error.message);
     }
   };
 
@@ -157,24 +146,24 @@ export default function VerifyEmailScreen() {
         <View style={styles.resendContainer}>
           <TouchableOpacity
             onPress={sendVerificationCode}
-            disabled={cooldown > 0}
+            disabled={cooldown > 0 || sendingCode}
           >
             <ThemedText style={[
               styles.resendText,
-              cooldown > 0 && styles.resendTextDisabled
+              (cooldown > 0 || sendingCode) && styles.resendTextDisabled
             ]}>
-              {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Code'}
+              {sendingCode ? 'Sending...' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Code'}
             </ThemedText>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
 
       <Button
-        title={sending ? (is2FAMode ? 'Verifying...' : 'Verifying...') : (is2FAMode ? 'Verify Identity' : 'Verify Email')}
+        title={verifyingCode ? (is2FAMode ? 'Verifying...' : 'Verifying...') : (is2FAMode ? 'Verify Identity' : 'Verify Email')}
         onPress={handleVerification}
         type="primary"
         buttonStyle={styles.sendButton}
-        disabled={sending || !code || code.length !== 6}
+        disabled={verifyingCode || !code || code.length !== 6}
       />
 
       <Wave style={{ position: 'absolute', bottom: 0, left: 0, right: 0, opacity: .7}} color={accentColor} height={70}/>

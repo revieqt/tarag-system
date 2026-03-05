@@ -43,6 +43,9 @@ export const logAction = async (req: Request, params: LogParams) => {
       appVersion: "",
     };
 
+    // Use clientIp from middleware if available, otherwise fall back to req.ip
+    const clientIp = (req as any).clientIp || req.ip || req.headers["x-forwarded-for"] || "Unknown";
+
     await LogModel.create({
       action: params.action,
       module: params.module,
@@ -53,7 +56,7 @@ export const logAction = async (req: Request, params: LogParams) => {
       // userId from params or from req.user
       userId: params.userId || (req as any).user?.id,
 
-      ip: req.ip || req.headers["x-forwarded-for"] || "",
+      ip: clientIp,
       platform: ua.platform,
 
       device: deviceInfo,

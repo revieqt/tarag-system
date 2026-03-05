@@ -223,3 +223,36 @@ export const viewUserItinerariesService = async (userID: string): Promise<IItine
     throw error;
   }
 };
+
+/**
+ * Update itinerary privacy (toggle isPrivate)
+ */
+export const updateItineraryPrivacyService = async (itineraryID: string): Promise<IItinerary> => {
+  try {
+    console.log('🟡 updateItineraryPrivacyService - Toggling privacy for itinerary:', itineraryID);
+
+    // First fetch the current itinerary to get the current privacy status
+    const itinerary = await ItineraryModel.findById(itineraryID);
+
+    if (!itinerary) {
+      console.log('❌ Itinerary not found:', itineraryID);
+      throw new Error('Itinerary not found');
+    }
+
+    // Invert the isPrivate value
+    const updatedItinerary = await ItineraryModel.findByIdAndUpdate(
+      itineraryID,
+      {
+        isPrivate: !itinerary.isPrivate,
+        updatedOn: new Date(),
+      },
+      { new: true, runValidators: true }
+    );
+
+    console.log('✅ Itinerary privacy updated successfully:', updatedItinerary);
+    return updatedItinerary!;
+  } catch (error) {
+    console.error('❌ Error updating itinerary privacy:', error);
+    throw error;
+  }
+};

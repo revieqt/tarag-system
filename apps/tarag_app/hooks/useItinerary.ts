@@ -8,6 +8,7 @@ import {
   deleteItinerary as deleteItineraryService,
   cancelItinerary as cancelItineraryService,
   markItineraryAsDone as markItineraryAsDoneService,
+  updateItineraryPrivacy as updateItineraryPrivacyService,
   Itinerary,
   CreateItineraryData,
   UpdateItineraryData,
@@ -164,6 +165,32 @@ export function useMarkItineraryAsDone() {
     onSuccess: (data) => {
       // Update the specific itinerary in cache
       queryClient.setQueryData(itineraryKeys.detail(data._id), data);
+      // Refetch the user itineraries list
+      queryClient.invalidateQueries({ queryKey: itineraryKeys.list() });
+    },
+  });
+}
+
+/**
+ * Hook to update itinerary privacy (toggle isPrivate)
+ */
+export function useUpdateItineraryPrivacy() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (itineraryID: string) => await updateItineraryPrivacyService(itineraryID),
+    onSuccess: (data) => {
+      // Get the existing cached itinerary data to preserve fields like username
+      const existingData = queryClient.getQueryData<any>(itineraryKeys.detail(data._id));
+      
+      // Merge the old data with the new data, preserving fields not in the response
+      const mergedData = {
+        ...existingData,
+        ...data,
+      };
+      
+      // Update the specific itinerary in cache with merged data
+      queryClient.setQueryData(itineraryKeys.detail(data._id), mergedData);
       // Refetch the user itineraries list
       queryClient.invalidateQueries({ queryKey: itineraryKeys.list() });
     },

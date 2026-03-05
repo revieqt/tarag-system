@@ -31,7 +31,7 @@ export default function AccountScreen() {
   const location = useLocation();
   const [showPayment, setShowPayment] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
-  const [showSupport, setShowSupport] = useState(false);
+  const [showWebModal, setShowWebModal] = useState<string | null>(null);
   const [devMode, setDevMode] = useState(false);
   const isConnected = useInternetConnection();
 
@@ -158,7 +158,7 @@ export default function AccountScreen() {
             <ThemedIcons name='file-find' size={15} />
             <ThemedText>App Manual</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowSupport(true)}
+          <TouchableOpacity onPress={() => setShowWebModal('support')}
             style={[styles.optionsChild, !isConnected && {opacity: 0.5}]}
             disabled={!isConnected}>
             <ThemedIcons name='headset' size={15} />
@@ -220,6 +220,12 @@ export default function AccountScreen() {
                 />
                 <ThemedText>Clear Cache</ThemedText>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowWebModal('developer')}
+                style={[styles.optionsChild, !isConnected && {opacity: 0.5}]}
+                disabled={!isConnected}>
+                <ThemedIcons name='code-tags' size={15} />
+                <ThemedText>About the Developer</ThemedText>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -234,9 +240,9 @@ export default function AccountScreen() {
 
       {/* Support Modal */}
       <WebViewModal
-        visible={showSupport}
-        onClose={() => setShowSupport(false)}
-        uri={SUPPORT_FORM_URL}
+        visible={showWebModal != null}
+        onClose={() => setShowWebModal(null)}
+        uri={showWebModal === 'support' ? SUPPORT_FORM_URL : 'https://joshopsima.vercel.app'}
       />
 
       <WebViewModal

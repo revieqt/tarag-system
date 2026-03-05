@@ -37,6 +37,7 @@ export interface Itinerary {
   status: 'active' | 'cancelled' | 'done';
   createdOn: string;
   updatedOn: string;
+  isPrivate: boolean;
   username?: string; // Optional - included when viewing individual itinerary
 }
 
@@ -288,5 +289,32 @@ export const markItineraryAsDone = async (itineraryID: string): Promise<Itinerar
     return data.data;
   } catch (error: any) {
     throw new Error(error.message || 'Failed to mark itinerary as done');
+  }
+};
+
+/**
+ * Update itinerary privacy (toggle isPrivate)
+ */
+export const updateItineraryPrivacy = async (itineraryID: string): Promise<Itinerary> => {
+  try {
+    const token = await getAccessToken();
+    
+    const response = await fetch(`${BACKEND_URL}/api/itineraries/update-privacy/${itineraryID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update itinerary privacy');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to update itinerary privacy');
   }
 };

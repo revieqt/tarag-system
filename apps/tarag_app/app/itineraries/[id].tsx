@@ -9,6 +9,7 @@ import {
   useDeleteItinerary,
   useMarkItineraryAsDone,
   useCancelItinerary,
+  useUpdateItineraryPrivacy,
 } from '@/hooks/useItinerary';
 import { useMapType } from '@/hooks/useMapType';
 import { useLocation } from '@/hooks/useLocation';
@@ -47,6 +48,7 @@ export default function ItineraryViewScreen() {
   const deleteItineraryMutation = useDeleteItinerary();
   const markItineraryAsDoneMutation = useMarkItineraryAsDone();
   const cancelItineraryMutation = useCancelItinerary();
+  const updateItineraryPrivacyMutation = useUpdateItineraryPrivacy();
   
   const { mapType: currentMapType } = useMapType();
   const { latitude: userLat, longitude: userLng } = useLocation();
@@ -260,6 +262,34 @@ export default function ItineraryViewScreen() {
     );
   };
 
+  const handleTogglePrivacy = async () => {
+    if (!itinerary?._id) return;
+
+    const isCurrentlyPrivate = itinerary.isPrivate;
+    const action = isCurrentlyPrivate ? 'Make Public' : 'Make Private';
+    
+    Alert.alert(
+      action,
+      `Are you sure you want to ${action.toLowerCase()} this itinerary?`,
+      [
+        { text: 'Cancel', onPress: () => null },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+              await updateItineraryPrivacyMutation.mutateAsync(itinerary._id);
+              const newPrivacyStatus = isCurrentlyPrivate ? 'Public' : 'Private';
+              Alert.alert('Success', `Itinerary is now ${newPrivacyStatus}`);
+            } catch (error) {
+              const errorMsg = error instanceof Error ? error.message : 'Failed to update itinerary privacy';
+              Alert.alert('Error', errorMsg);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleDelete = async () => {
     if (!itinerary?._id) return;
     
@@ -411,6 +441,14 @@ export default function ItineraryViewScreen() {
           showFirstOptions ? (
             <OptionsPopup
               options={[
+                <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
+                  <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
+                  <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
+                </TouchableOpacity>,
+                <TouchableOpacity style={styles.optionsChild} onPress={() => setShowShare(true)}>
+                  <ThemedIcons name="share" size={20} />
+                  <ThemedText>Share Itinerary</ThemedText>
+                </TouchableOpacity>,
                 <OptionsPopup
                   key="createGroupTrip"
                   style={[styles.createGroupTrip, { opacity: 0.5 }]}
@@ -442,13 +480,6 @@ export default function ItineraryViewScreen() {
                   <ThemedIcons name="account-group" size={20}/>
                   <ThemedText>Create a Group with Itinerary</ThemedText>
                 </OptionsPopup>,
-                <TouchableOpacity 
-                  style={styles.optionsChild}
-                  onPress={() => setShowShare(true)}
-                >
-                  <ThemedIcons name="share" size={20} />
-                  <ThemedText>Share Itinerary</ThemedText>
-                </TouchableOpacity>,
                 <TouchableOpacity style={styles.optionsChild} onPress={handleGoToUpdateForm}>
                   <ThemedIcons name="pencil" size={20} />
                   <ThemedText>Edit Itinerary</ThemedText>
@@ -473,6 +504,10 @@ export default function ItineraryViewScreen() {
           ) : (
             <OptionsPopup
               options={[
+                <TouchableOpacity style={styles.optionsChild} onPress={handleTogglePrivacy}>
+                  <ThemedIcons name={itinerary?.isPrivate ? "lock" : "lock-open"} size={20} />
+                  <ThemedText>{itinerary?.isPrivate ? 'Make Itinerary Public' : 'Make Itinerary Private'}</ThemedText>
+                </TouchableOpacity>,
                 <TouchableOpacity style={styles.optionsChild} onPress={handleRepeatItinerary}>
                   <ThemedIcons name="history" size={20} />
                   <ThemedText>Repeat Itinerary</ThemedText>
@@ -489,11 +524,16 @@ export default function ItineraryViewScreen() {
           ))
         }
         
-
         <BackButton type="close-floating" color="#fff"/>
-        <ThemedText type='subtitle' style={{ color: '#fff'}}>
-          {itinerary?.title}
-        </ThemedText>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 6}}>
+          <ThemedText type='subtitle' style={{ color: '#fff'}}>
+            {itinerary?.title}
+          </ThemedText>
+          {itinerary?.isPrivate && (
+            <ThemedIcons name="lock" size={15} color='white'/>
+          )}
+        </View>
+        
         <View style={styles.detailsContainer}>
           <ThemedIcons name="calendar" size={13} color="#fff"/>
           <ThemedText style={{ color: '#fff', fontSize: 11 }}>
@@ -555,17 +595,6 @@ export default function ItineraryViewScreen() {
                 {selectedLocation.note}
             </ThemedText>
             )}
-            {/* <WeatherCard
-            latitude={selectedLocation.latitude}
-            longitude={selectedLocation.longitude}
-            locationName={selectedLocation.locationName}
-            date={selectedLocation.date 
-                ? formatDate(selectedLocation.date)
-                : itinerary?.startDate 
-                ? formatDate(itinerary.startDate)
-                : undefined
-            }
-            />  */}
         </LinearGradient>
         ) : (
         itinerary && (
@@ -621,6 +650,17 @@ export default function ItineraryViewScreen() {
         link={itinerary ? `exp://tarag-v2.exp.app/itineraries/${itinerary._id}` : ''}
         onClose={() => setShowShare(false)}
       />
+      
+      {/* Show privacy overlay if itinerary is private and user is not the owner */}
+      {itinerary && itinerary.isPrivate && itinerary.userID !== session?.user?.id && (
+        <View style={styles.privateOverlay}>
+          <ThemedIcons name="lock" size={48} color="#fff" />
+          <ThemedText style={styles.privateText}>This Itinerary is Private</ThemedText>
+          <ThemedText style={styles.privateSubText}>
+            Only the creator can view this itinerary
+          </ThemedText>
+        </View>
+      )}
     </View>
   );
 }
@@ -734,5 +774,26 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 10,
+  },
+  privateOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 200,
+    gap: 12,
+  },
+  privateText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  privateSubText: {
+    color: '#ccc',
+    fontSize: 14,
   },
 });

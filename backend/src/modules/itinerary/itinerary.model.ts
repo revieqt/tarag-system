@@ -36,6 +36,7 @@ export interface IItinerary extends Document {
   updatedOn: Date;
   planDaily: boolean;
   locations: ILocation[] | IDailyItinerary[];
+  isPrivate: boolean;
 }
 
 const LocationSchema = new Schema<ILocation>(
@@ -140,6 +141,11 @@ const ItinerarySchema = new Schema<IItinerary>({
     type: Schema.Types.Mixed,
     required: true,
     default: [],
+  },
+  isPrivate: {
+    type: Boolean,
+    default: true,
+    required: true,
   },
 });
 

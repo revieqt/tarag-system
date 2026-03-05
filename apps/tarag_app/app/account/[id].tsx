@@ -71,24 +71,31 @@ export default function ProfileScreen() {
                 contentContainerStyle={styles.tabsContentContainer}
               >
                 {showTravelInfo && (
-                  <TouchableOpacity style={[styles.tabs, {backgroundColor: primaryColor}]}
+                  <TouchableOpacity style={styles.tabs}
                     onPress={() => setActiveTab('travels')}
                   >
-                    <ThemedText>Travel Info</ThemedText>
+                    <ThemedText style={{color: '#fff'}}>Travel Info</ThemedText>
                   </TouchableOpacity>
                 )}
                 {showAbout && (
-                  <TouchableOpacity style={[styles.tabs, {backgroundColor: primaryColor}]}
+                  <TouchableOpacity style={styles.tabs}
                     onPress={() => setActiveTab('about')}
                   >
-                    <ThemedText>About</ThemedText>
+                    <ThemedText style={{color: '#fff'}}>About</ThemedText>
                   </TouchableOpacity>
                 )}
                 {isCurrentUser && isConnected && (
-                  <TouchableOpacity style={[styles.tabs, {backgroundColor: primaryColor}]}
+                  <TouchableOpacity style={styles.tabs}
                     onPress={() => router.push('/account/settings-accountControl')}
                   >
-                    <ThemedText>Edit Profile</ThemedText>
+                    <ThemedText style={{color: '#fff'}}>Edit Profile</ThemedText>
+                  </TouchableOpacity>
+                )}
+                {isCurrentUser && isConnected && (
+                  <TouchableOpacity style={styles.tabs}
+                    onPress={() => router.push('/account/settings-accountControl')}
+                  >
+                    <ThemedText style={{color: '#fff'}}>Share Profile</ThemedText>
                   </TouchableOpacity>
                 )}
               </ScrollView>
@@ -225,6 +232,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 20,
+    backgroundColor: '#ccc3',
   },
   badgeContainer:{
     width: '100%',

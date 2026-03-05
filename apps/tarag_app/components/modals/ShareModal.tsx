@@ -15,7 +15,6 @@ import ThemedIcons from "../ThemedIcons";
 import { ThemedText } from "../ThemedText";
 import GradientBlobs from "../GradientBlobs";
 import { ThemedView } from "../ThemedView";
-import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface ShareModalProps {
   visible: boolean;
@@ -72,7 +71,6 @@ export default function ShareModal({
       <View style={styles.overlay}>
         <ThemedView style={styles.container}>
             <GradientBlobs/>
-          <ThemedText type="subtitle" style={{marginBottom: 20}}>Share Link</ThemedText>
 
           {/* QR Code */}
           <View style={styles.qrContainer}>
@@ -80,7 +78,7 @@ export default function ShareModal({
           </View>
 
           {/* Clickable Link */}
-          <TouchableOpacity onPress={handleCopy} style={[styles.copyLink, {backgroundColor: useThemeColor({}, 'primary')}]} activeOpacity={0.7}>
+          <TouchableOpacity onPress={handleCopy} style={styles.copyLink} activeOpacity={0.7}>
             <ThemedText style={{textAlign: "center"}}>{link}</ThemedText>
             <ThemedText style={{opacity: 0.5, fontSize: 11}}>Tap to copy</ThemedText>
           </TouchableOpacity>
@@ -130,14 +128,19 @@ const styles = StyleSheet.create({
     width: "85%",
     borderRadius: 16,
     padding: 20,
+    paddingTop: 40,
     alignItems: "center",
+    overflow: "hidden",
   },
   qrContainer: {
     marginBottom: 20,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 12,
   },
   copyLink: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
   iconRow:{
     flexDirection: "row",
     gap: 10,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   icons:{
     width: 55,

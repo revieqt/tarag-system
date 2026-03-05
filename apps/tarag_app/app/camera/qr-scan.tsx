@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, Vibration } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useRouter } from 'expo-router';
 import BackButton from '@/components/BackButton';
 import { ThemedText } from '@/components/ThemedText';
 
-export default function QRScan({ navigation }: any) {
+export default function QRScan() {
+  const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -21,19 +23,18 @@ export default function QRScan({ navigation }: any) {
     );
   }
 
-  const handleScanned = ({ nativeEvent }: any) => {
+  const handleScanned = (barcode: any) => {
     if (scanned) return;
     setScanned(true);
 
     Vibration.vibrate(200);
-    const { data } = nativeEvent;
-    console.log('QR scanned:', data);
-
-    if (data.startsWith('tarag://join/')) {
-      const groupId = data.split('/').pop();
-      navigation.navigate('GroupJoin', { groupId });
+    let data = barcode?.data || barcode?.value || '';
+    if (data && data.includes('exp://tarag-v2.exp.app/')) {
+      const url = data.replace('exp://tarag-v2.exp.app/', '/');
+      router.push(url);
+    } else {
+      console.log('QR format not recognized');
     }
-
     setTimeout(() => setScanned(false), 3000);
   };
 

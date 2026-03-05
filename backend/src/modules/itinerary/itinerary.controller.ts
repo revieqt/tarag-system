@@ -8,6 +8,7 @@ import {
   markItineraryAsDoneService,
   repeatItineraryService,
   viewUserItinerariesService,
+  updateItineraryPrivacyService,
 } from './itinerary.service';
 import { CreateItineraryRequest, UpdateItineraryRequest } from './itinerary.types';
 import User from '../account/account.model';
@@ -358,6 +359,37 @@ export const viewUserItineraries = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error('❌ Error viewing user itineraries:', error);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+};
+
+/**
+ * Update itinerary privacy (toggle isPrivate)
+ * PATCH /api/itineraries/update-privacy/:itineraryID
+ */
+export const updateItineraryPrivacy = async (req: AuthRequest, res: Response) => {
+  try {
+    console.log('🟡 updateItineraryPrivacy - req.user:', req.user);
+    const { itineraryID } = req.params;
+
+    if (!itineraryID) {
+      return res.status(400).json({ message: 'Itinerary ID is required' });
+    }
+
+    const updatedItinerary = await updateItineraryPrivacyService(itineraryID);
+
+    res.status(200).json({
+      message: 'Itinerary privacy updated successfully',
+      data: updatedItinerary,
+    });
+  } catch (error) {
+    console.error('❌ Error updating itinerary privacy:', error);
+    if (error instanceof Error && error.message === 'Itinerary not found') {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
     res.status(500).json({
       message: 'Internal server error',
       error: error instanceof Error ? error.message : 'Unknown error',
